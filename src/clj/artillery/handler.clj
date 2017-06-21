@@ -1,5 +1,5 @@
 (ns artillery.handler
-  (:require [compojure.core :refer [GET defroutes]]
+  (:require [compojure.core :refer [GET routes]]
             [compojure.route :refer [not-found resources]]
             [artillery.middleware :refer [wrap-middleware]]
             [com.stuartsierra.component :as component]
@@ -9,8 +9,9 @@
 
 (defn wrap-handler [cmpt handler]
   (fn [request]
-    (merge (select-keys cmpt [:semaphore :orchestrator])
-           request)))
+    (handler 
+     (merge (select-keys cmpt [:semaphore :orchestrator])
+            request))))
 
 (def json-header {"Content-Type" "application/json"})
 
@@ -20,12 +21,13 @@
                          :headers json-header
                          :body scenes})))
 
-(defroutes routes
-  (GET "/apli/scenes" get-scenes)
-  (resources "/")
-  (not-found "Not Found"))
+(defn app-routes []
+  (routes
+   (GET "/api/scenes" [] get-scenes)
+   (resources "/")
+   (not-found "Not Found")))
 
-(def app (wrap-middleware #'routes))
+;;(def app (wrap-middleware #'routes))
 
 (defrecord Handler [http-handler semaphore orchestrator]
   component/Lifecycle

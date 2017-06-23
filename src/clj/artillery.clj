@@ -16,23 +16,15 @@
 
   (in-ns 'artillery)
 
-  (defonce system (atom {}))
-
-  (reset! system (component/system-map
-                  :db (db/new-database)
-                  :orchestrator (component/using
-                                 (orchestrator/new-orchestrator)
-                                 [:db])
-                  :handler (component/using
-                            (handler/new-handler)
-                            [:orchestrator])
-                  :server (component/using
-                           (server/new-server)
-                           [:handler])
-                  ))
+  (defonce system (atom (component/system-map
+                         :db (db/new-database)
+                         :orchestrator (component/using (orchestrator/new-orchestrator) [:db])
+                         :handler (component/using (handler/new-handler) [:orchestrator])
+                         :server (component/using (server/new-server) [:handler]))))
 
   (swap! system component/start)
 
+  (swap! system component/stop)
 
   )
 

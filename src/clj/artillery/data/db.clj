@@ -8,7 +8,7 @@
              :password    ""
              :classname   "org.h2.Driver"
              :subprotocol "h2"
-             :subname     "/tmp/artillery"
+             :subname     "~/artillery"
              })
 
 (defn get-connection [db]
@@ -45,20 +45,3 @@
   (map->Database {}))
 
 
-(comment
-  (use 'artillery.data.db :reload)
-
-  (in-ns 'artillery.data.db)
-
-  (def c (sql/get-connection db-def))
-
-  (defonce system (atom {}))
-
-  (reset! system (component/system-map
-                  :db (new-database)))
-
-  (swap! system component/start)
-
-  (def db (:db @system))
-
-  )

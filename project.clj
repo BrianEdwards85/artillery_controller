@@ -44,14 +44,14 @@
             [lein-asset-minifier "0.2.7"
              :exclusions [org.clojure/clojure]]]
 
-  :ring {:handler artillery.handler/app
-         :uberwar-name "artillery.war"}
+;;  :ring {:handler artillery.handler/app
+;;         :uberwar-name "artillery.war"}
 
   :min-lein-version "2.5.0"
 
   :uberjar-name "artillery.jar"
 
-  :main artillery.server
+  :main artillery  ;;.server
 
   :clean-targets ^{:protect false}
   [:target-path
@@ -91,18 +91,18 @@
    }
 
 
-  :figwheel
-  {:http-server-root "public"
-   :server-port 3449
-   :nrepl-port 7002
-   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
-                      ]
-   :css-dirs ["resources/public/css"]
-   :ring-handler artillery.handler/app}
+;;  :figwheel
+;;  {:http-server-root "public"
+;;   :server-port 3449
+;;   :nrepl-port 7002
+;;   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
+;;                      ]
+;;   :css-dirs ["resources/public/css"]
+;;   :ring-handler artillery.handler/app}
 
 
 
-  :profiles {:dev {:repl-options {;;:init-ns artillery.repl
+  :profiles {:dev {:repl-options {:init-ns artillery    ;;.repl
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
                    :dependencies [[ring/ring-mock "0.3.0"]

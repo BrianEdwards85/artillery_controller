@@ -1,15 +1,17 @@
 (ns artillery.handler
-  (:require [compojure.core :refer [GET routes]]
+  (:require [compojure.core :refer [GET PUT routes]]
             [compojure.route :refer [not-found resources]]
             [artillery.middleware :refer [wrap-middleware]]
+            [artillery.orchestrator :as orchestrator]
+            [artillery.http :as http]
             [com.stuartsierra.component :as component]
             [manifold.deferred :as d]
-            [artillery.orchestrator :as orchestrator]
-            [config.core :refer [env]]))
+            [config.core :refer [env]]
+            [clojure.data.json :as json]))
 
 (defn wrap-handler [cmpt handler]
   (fn [request]
-    (handler 
+    (handler
      (merge (select-keys cmpt [:semaphore :orchestrator])
             request))))
 
@@ -20,10 +22,35 @@
            (fn [scenes] {:status 200
                          :headers json-header
                          :body scenes})))
+(defn add-scene [request]
+  (let [description (-> request :body slurp)]
+    (d/chain (orchestrator/add-scene (:orchestrator request) description)
+             #(hash-map :status 200
+                        :headers json-header
+                        :body %))))
+
+(defn get-scene-events [request]
+  (let [scene (-> request :route-params :scene)]
+    (d/chain (orchestrator/get-scene-events (:orchestrator request) scene)
+             #(hash-map :status 200
+                        :headers json-header
+                        :body %))))
+
+(defn add-scene-event [request]
+  (let [scene (-> request :route-params :scene)
+        event (-> request :body slurp (json/read-str :key-fn keyword) (assoc :scene scene))]
+    (d/chain
+     (orchestrator/add-scene-event (:orchestrator request) event)
+     #(hash-map :status 200
+                :body (str %)))))
 
 (defn app-routes []
   (routes
+   (GET "/" [] (http/loading-page))
    (GET "/api/scenes" [] get-scenes)
+   (PUT "/api/scenes" [] add-scene)
+   (GET "/api/scenes/:scene" [scene] get-scene-events)
+   (PUT "/api/scenes/:scene" [scene] add-scene-event)
    (resources "/")
    (not-found "Not Found")))
 

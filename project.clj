@@ -32,6 +32,8 @@
                  [re-com "0.9.0"]
                  [day8.re-frame/http-fx "0.1.3"]
 
+                 [re-frisk "0.3.0"]
+
                  [compojure "1.6.0"]
                  [hiccup "1.0.5"]
                  [yogthos/config "0.8"]

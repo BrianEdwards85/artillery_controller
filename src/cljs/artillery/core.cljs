@@ -1,10 +1,15 @@
 (ns artillery.core
     (:require [reagent.core :as reagent :refer [atom]]
+              [artillery.handlers :as handlers]
+              [artillery.subs :as subs]
+              [artillery.views :as views]
+              [re-frame.core :as re-frame]
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]))
 
 ;; -------------------------
 ;; Views
+
 
 (defn home-page []
   [:div [:h2 "Welcome to artillery"]
@@ -17,30 +22,28 @@
 ;; -------------------------
 ;; Routes
 
-(def page (atom #'home-page))
-
-(defn current-page []
-  [:div [@page]])
-
 (secretary/defroute "/" []
-  (reset! page #'home-page))
+  (re-frame/dispatch [:nav-scenes]))
 
-(secretary/defroute "/about" []
-  (reset! page #'about-page))
+(secretary/defroute "/scene/:id" {:as params}
+  (re-frame/dispatch [:nav-scene-events (:id params)]))
 
 ;; -------------------------
 ;; Initialize app
 
-(defn mount-root []
-  (reagent/render [current-page] (.getElementById js/document "app")))
+(def accountant-configuration
+  {:nav-handler
+   (fn [path]
+     (secretary/dispatch! path))
+   :path-exists?
+   (fn [path]
+     (secretary/locate-route path))})
 
 (defn init! []
-  (accountant/configure-navigation!
-    {:nav-handler
-     (fn [path]
-       (secretary/dispatch! path))
-     :path-exists?
-     (fn [path]
-       (secretary/locate-route path))})
+  (handlers/reg-events)
+  (subs/reg-subs)
+  (re-frame/dispatch-sync [:initialize])
+  (accountant/configure-navigation! accountant-configuration)
   (accountant/dispatch-current!)
-  (mount-root))
+  (reagent/render [views/main-panel] (.getElementById js/document "app")))
+ ;; (mount-root)

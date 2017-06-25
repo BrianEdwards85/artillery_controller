@@ -47,6 +47,7 @@
 (defn app-routes []
   (routes
    (GET "/" [] (http/loading-page))
+   (GET "/scene/:id" [id] (http/loading-page))
    (GET "/api/scenes" [] get-scenes)
    (PUT "/api/scenes" [] add-scene)
    (GET "/api/scenes/:scene" [scene] get-scene-events)
@@ -61,6 +62,7 @@
 
   (start [this]
     (->> (app-routes)
+         wrap-middleware
          (wrap-handler this)
          (assoc this :http-handler)))
 

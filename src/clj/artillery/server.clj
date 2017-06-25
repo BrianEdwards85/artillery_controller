@@ -12,7 +12,7 @@
 
   (start [this]
      (assoc this
-            :server (http/start-server (:http-handler handler) {:port 8080}))
+            :server (http/start-server (:http-handler handler) {:port 8888}))
      )
 
   (stop [this]

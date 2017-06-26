@@ -24,6 +24,7 @@
                  [org.clojure/java.jdbc "0.6.1"]
 
                  [clojurewerkz/machine_head "1.0.0"]
+                 [overtone/at-at "1.2.0"]
 
                  [com.cemerick/url "0.1.1"]
                  [reagent "0.6.2"]
@@ -86,23 +87,8 @@
               :source-map true
               :optimizations :none
               :pretty-print  true}}
-
-
-
             }
    }
-
-
-;;  :figwheel
-;;  {:http-server-root "public"
-;;   :server-port 3449
-;;   :nrepl-port 7002
-;;   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
-;;                      ]
-;;   :css-dirs ["resources/public/css"]
-;;   :ring-handler artillery.handler/app}
-
-
 
   :profiles {:dev {:repl-options {:init-ns artillery    ;;.repl
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}

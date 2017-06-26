@@ -1,5 +1,5 @@
 (ns artillery.handler
-  (:require [compojure.core :refer [GET PUT routes]]
+  (:require [compojure.core :refer [GET PUT DELETE routes]]
             [compojure.route :refer [not-found resources]]
             [artillery.middleware :refer [wrap-middleware]]
             [artillery.orchestrator :as orchestrator]
@@ -44,6 +44,14 @@
      #(hash-map :status 200
                 :body (str %)))))
 
+(defn remove-scene-event [request]
+  (let [scene (-> request :route-params :scene)
+        idx (-> request :route-params :idx)]
+    (d/chain
+     (orchestrator/remove-scene-event (:orchestrator request) scene idx)
+     #(hash-map :status 200
+                :body (str %)))))
+
 (defn app-routes []
   (routes
    (GET "/" [] (http/loading-page))
@@ -52,6 +60,7 @@
    (PUT "/api/scenes" [] add-scene)
    (GET "/api/scenes/:scene" [scene] get-scene-events)
    (PUT "/api/scenes/:scene" [scene] add-scene-event)
+   (DELETE "/api/scenes/:scene/:idx" [scene idx] remove-scene-event)
    (resources "/")
    (not-found "Not Found")))
 

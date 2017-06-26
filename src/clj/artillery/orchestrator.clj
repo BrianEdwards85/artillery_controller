@@ -41,5 +41,13 @@
            json/write-str))
 
 (defn add-scene-event [orchestrator event]
-  (d/chain (events/add-scene-event (:db orchestrator) event)
+  (d/chain
+   (if (contains? event :idx)
+     (d/chain (events/push-scene-events (:db orchestrator) (:scene event) (:idx event))
+              (fn [_] (events/insert-scene-event (:db orchestrator) event)))
+     (events/append-scene-event (:db orchestrator) event))
+           (fn [_] 1 )))
+
+(defn remove-scene-event [orchestrator scene idx]
+  (d/chain (events/remove-scene-event (:db orchestrator) scene idx)
            (fn [_] 1 )))

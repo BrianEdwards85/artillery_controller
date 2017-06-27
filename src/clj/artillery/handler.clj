@@ -6,6 +6,7 @@
             [artillery.http :as http]
             [com.stuartsierra.component :as component]
             [manifold.deferred :as d]
+            [manifold.stream :as ms]
             [config.core :refer [env]]
             [clojure.data.json :as json]))
 
@@ -51,6 +52,14 @@
      (orchestrator/remove-scene-event (:orchestrator request) scene idx)
      #(hash-map :status 200
                 :body (str %)))))
+(defn run-scene-events [request]
+  (let [scene (-> request :route-params :scene)
+        stream (orchestrator/schedule-events (:orchestrator request) scene)]
+    {:status 200
+     :body (ms/map #(str "data: " (json/write-str %) "\n\n") stream)
+     :headers {"Content-Type"  "text/event-stream"}
+     }
+    ))
 
 (defn app-routes []
   (routes
@@ -60,6 +69,7 @@
    (PUT "/api/scenes" [] add-scene)
    (GET "/api/scenes/:scene" [scene] get-scene-events)
    (PUT "/api/scenes/:scene" [scene] add-scene-event)
+   (GET "/api/scenes/:scene/run" [scene] run-scene-events)
    (DELETE "/api/scenes/:scene/:idx" [scene idx] remove-scene-event)
    (resources "/")
    (not-found "Not Found")))

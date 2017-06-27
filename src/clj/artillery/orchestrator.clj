@@ -67,11 +67,17 @@
                                add-scene-event-abs)
               pool (at/mk-pool)
               n (at/now)]
+          (at/at
+           (->> events (map :offset) (apply max) (* 1100) (+ n))
+           #(s/put! r "DONE")
+           pool
+           )
           (doall
            (map
             #(at/at
-              (+ n (* 1000 (:delay %1)))
+              (+ n (* 1000 (:offset %1)))
               (fn [] (do
+                       (println (str "Fire: " (:idx %1)))
                        (s/put! r %1)))
               pool)
             events

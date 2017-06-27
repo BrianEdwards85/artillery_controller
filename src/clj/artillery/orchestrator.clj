@@ -3,7 +3,13 @@
             [clojure.data.json :as json]
             [manifold.deferred :as d]
             [artillery.data.events :as events]
-            [artillery.data.scene :as scene]))
+            [artillery.data.scene :as scene]
+
+            [clojure.core.async :as async]
+            [overtone.at-at :as at]
+            [manifold.stream :as s]
+
+            ))
 
 (defrecord Orchestrator [db]
   component/Lifecycle
@@ -25,6 +31,7 @@
   (d/chain (scene/add-scene (:db orchestrator) description)
            #(json/write-str {:id %
                              :description description})))
+
 (defn add-scene-event-abs [events]
   (loop [rst (rest events)
          c (first events)
@@ -51,3 +58,31 @@
 (defn remove-scene-event [orchestrator scene idx]
   (d/chain (events/remove-scene-event (:db orchestrator) scene idx)
            (fn [_] 1 )))
+
+(defn schedule-events [orchestrator scene]
+  (let [r (s/stream)]
+    (do
+      (async/go
+        (let [events @(d/chain (events/get-scene-events (:db orchestrator) scene)
+                               add-scene-event-abs)
+              pool (at/mk-pool)
+              n (at/now)]
+          (doall
+           (map
+            #(at/at
+              (+ n (* 1000 (:delay %1)))
+              (fn [] (do
+                       (s/put! r %1)))
+              pool)
+            events
+            ))))
+      r
+    )
+  )
+)
+
+(comment
+
+  (manifold.stream/consume #(println %) (artillery.orchestrator/schedule-events (:orchestrator @system) "bb0daed2-6760-481e-8de5-53c6d55bf85e" ) )
+
+  )

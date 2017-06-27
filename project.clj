@@ -10,7 +10,7 @@
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/clojurescript "1.9.562"
                   :scope "provided"]
-                 [org.clojure/core.async "0.2.395"]
+                 [org.clojure/core.async "0.3.443"]
                  [org.clojure/tools.nrepl "0.2.12"]
                  [org.clojure/tools.logging "0.3.1"]
 

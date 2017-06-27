@@ -3,10 +3,18 @@
             [artillery.orchestrator :as orchestrator]
             [artillery.data.db :as db]
             [artillery.server :as server]
+            [artillery.mqtt :as mqtt]
             [com.stuartsierra.component :as component])
   (:gen-class))
 
-
+(defn create-system []
+  (component/system-map
+   :db (db/new-database)
+   :mqtt (mqtt/new-mqtt)
+   :orchestrator (component/using (orchestrator/new-orchestrator) [:db])
+   :handler (component/using (handler/new-handler) [:orchestrator])
+   :server (component/using (server/new-server) [:handler])
+   ))
 
 (defn -main [& args]
   1)
@@ -16,11 +24,7 @@
 
   (in-ns 'artillery)
 
-  (defonce system (atom (component/system-map
-                         :db (db/new-database)
-                         :orchestrator (component/using (orchestrator/new-orchestrator) [:db])
-                         :handler (component/using (handler/new-handler) [:orchestrator])
-                         :server (component/using (server/new-server) [:handler]))))
+  (defonce system (atom (create-system)))
 
   (swap! system component/start)
 
@@ -38,5 +42,7 @@
                 (fn [] (fire-event %1))
                 pool)
               e))))
+
+
   )
 

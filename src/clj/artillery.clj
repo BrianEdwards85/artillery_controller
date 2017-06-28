@@ -4,8 +4,11 @@
             [artillery.data.db :as db]
             [artillery.server :as server]
             [artillery.mqtt :as mqtt]
+             [clojure.tools.nrepl.server :as nrepl]
             [com.stuartsierra.component :as component])
   (:gen-class))
+
+(defonce system (atom nil))
 
 (defn create-system []
   (component/system-map
@@ -17,10 +20,13 @@
    ))
 
 (defn -main [& args]
-  (let [system (atom (create-system))]
+  (let [n (nrepl/start-server :port 7888)]
+    (reset! system (create-system))
     (swap! system component/start)
     (handler/wait (:handler @system))
-    (swap! system component/stop))
+    (swap! system component/stop)
+    (nrepl/stop-server n)
+    (System/exit 0))
   )
 
 (comment

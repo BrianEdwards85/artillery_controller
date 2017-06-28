@@ -86,7 +86,7 @@
        [:h3 (str "Events: " (:description @scene))]
        [:div
         [:button {:class "btn btn-default" :type "button" :on-click #(reset! add-event true)} "Add"]
-        [:button {:class "btn btn-default" :type "button" :on-click #(dispatch [:run-scene (:id @scene)])} "Run"]]
+        [:button {:class "btn btn-default" :type "button" :on-click #(dispatch [:run-scene (:id @scene)])} "Run!"]]
        [scene-event-table @events #(do
                                      (reset! idx %)
                                      (reset! add-event true))]

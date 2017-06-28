@@ -7,8 +7,9 @@
   component/Lifecycle
 
   (start [this]
-    (let [id (mh/generate-id)]
-      (assoc this :connection (mh/connect "tcp://192.168.16.131:1883" id))))
+    (let [id (mh/generate-id)
+          url "tcp://localhost:1883"] ;;"tcp://192.168.16.131:1883"
+      (assoc this :connection (mh/connect url id))))
 
     (stop [this]
           (do

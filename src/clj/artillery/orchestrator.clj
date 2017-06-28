@@ -70,20 +70,20 @@
               pool (at/mk-pool)
               n (at/now)]
           (at/at
-           (->> events (map :offset) (apply max) (* 1100) (+ n))
+           (->> events (map :offset) (apply max) (* 110) (+ n))
            #(s/put! r "DONE")
            pool
            )
           (doall
            (map
             #(at/at
-              (+ n (* 1000 (:offset %1)))
+              (+ n (* 100 (:offset %1)))
               (fn [] (do
                        (mqtt/publish
                         (:mqtt orchestrator)
                         (str "/" (:device %1) "/" (:pin %1))
-                        (keep %1 [:addr :pin]))
-                       (println (str "Fire: " (:idx %1)))
+                        (select-keys %1 [:addr :pin]))
+;;                       (println (str "Fire: " (:idx %1)))
                        (s/put! r %1)))
               pool)
             events

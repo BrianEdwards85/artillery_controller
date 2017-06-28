@@ -35,3 +35,20 @@
                 :response-format json
                 :on-success      [succcess]
                 :on-failure      [failure]}})
+
+(defn run-scene [scene event-triggered scene-done]
+  (let [url (str "/api/scenes/" scene "/run")
+        source (new js/EventSource url)]
+    (.addEventListener
+     source
+     "message"
+     (fn [event]
+       (let [data (.-data event)]
+         (if (= "\"DONE\"" data)
+           (do
+             (.close source)
+             (scene-done))
+           (event-triggered
+            (js->clj
+             (.parse js/JSON data)
+             :keywordize-keys true))))))))

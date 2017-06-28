@@ -6,7 +6,7 @@
       [:span {:class (str "glyphicon glyphicon-" n) }])
 
 (defn scene-event-row [event add-handler]
-  [:tr
+  [:tr (if (:triggered event) {:class "success"})
    [:td (:device event)]
    [:td (:addr event)]
    [:td (:pin event)]
@@ -82,10 +82,11 @@
         idx (r/atom nil)
         add-event (r/atom false)]
     (fn []
-      [:deva
+      [:dev
        [:h3 (str "Events: " (:description @scene))]
        [:div
-        [:button {:class "btn btn-default" :type "button" :on-click #(reset! add-event true)} "Add"]]
+        [:button {:class "btn btn-default" :type "button" :on-click #(reset! add-event true)} "Add"]
+        [:button {:class "btn btn-default" :type "button" :on-click #(dispatch [:run-scene (:id @scene)])} "Run"]]
        [scene-event-table @events #(do
                                      (reset! idx %)
                                      (reset! add-event true))]

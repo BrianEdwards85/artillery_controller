@@ -2,8 +2,10 @@
   (:require [com.stuartsierra.component :as component]
             [clojure.data.json :as json]
             [manifold.deferred :as d]
+
             [artillery.data.events :as events]
             [artillery.data.scene :as scene]
+            [artillery.mqtt :as mqtt]
 
             [clojure.core.async :as async]
             [overtone.at-at :as at]
@@ -11,7 +13,7 @@
 
             ))
 
-(defrecord Orchestrator [db]
+(defrecord Orchestrator [db mqtt]
   component/Lifecycle
 
   (start [this]
@@ -77,6 +79,10 @@
             #(at/at
               (+ n (* 1000 (:offset %1)))
               (fn [] (do
+                       (mqtt/publish
+                        (:mqtt orchestrator)
+                        (str "/" (:device %1) "/" (:pin %1))
+                        (keep %1 [:addr :pin]))
                        (println (str "Fire: " (:idx %1)))
                        (s/put! r %1)))
               pool)

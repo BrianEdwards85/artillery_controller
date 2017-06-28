@@ -27,7 +27,13 @@
   (re-frame/reg-sub
    :scene-events
    (fn [db _]
-     (:scene_events db)))
+     (map #(assoc %1 :triggered (contains? (:triggered-events db) %1)) 
+          (:scene_events db))))
+
+  (re-frame/reg-sub
+   :triggered-events
+   (fn [db _]
+     (:triggered-events db)))
 
   )
 

@@ -10,6 +10,7 @@
    :scene nil
    :scenes nil
    :scene_events []
+   :triggered-events #{}
    })
 
 (defn initialize-event [_ _]
@@ -56,6 +57,19 @@
 (defn get-scenes-failure [db [_ r]]
   (assoc db :error r))
 
+(defn event-triggered [db [_ e]]
+  (assoc db :triggered-events (conj (:triggered-events db) e)))
+
+(defn scene-done [db _]
+  (assoc db :triggered-events #{}))
+
+(defn run-scene [db [_ s]]
+  (service/run-scene s
+             #(re-frame/dispatch [:event-triggered %])
+             #(re-frame/dispatch [:scene-done]))
+  (assoc db :triggered-events #{}))
+
+
 (defn reg-events []
   (do
     (re-frame/reg-event-db :initialize initialize-event)
@@ -73,6 +87,10 @@
 
     (re-frame/reg-event-fx :nav-scenes nav-scenes)
     (re-frame/reg-event-fx :nav-scene-events nav-scene-events)
+
+    (re-frame/reg-event-db :event-triggered event-triggered)
+    (re-frame/reg-event-db :scene-done scene-done)
+    (re-frame/reg-event-db :run-scene run-scene)
 
     ))
 

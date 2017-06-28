@@ -17,7 +17,11 @@
    ))
 
 (defn -main [& args]
-  1)
+  (let [system (atom (create-system))]
+    (swap! system component/start)
+    (handler/wait (:handler @system))
+    (swap! system component/stop))
+  )
 
 (comment
   (use 'artillery :reload)

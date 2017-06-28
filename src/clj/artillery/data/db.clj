@@ -16,7 +16,9 @@
 
 (defn get-schema-statments [f]
   (->>
-   (-> f io/resource io/file slurp (str/split #";"))
+   (-> f io/resource slurp (str/split #";"))
+
+;;   io/file
    (map str/trim)
    (filter #(-> % empty? not))))
 

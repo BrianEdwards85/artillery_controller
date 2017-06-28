@@ -76,6 +76,9 @@
 
 ;;(def app (wrap-middleware #'routes))
 
+(defn wait [handler]
+  @(:semaphore handler))
+
 (defrecord Handler [http-handler semaphore orchestrator]
   component/Lifecycle
 

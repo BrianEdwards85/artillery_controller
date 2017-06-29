@@ -1,5 +1,12 @@
 (ns artillery.middleware
-  (:require [ring.middleware.defaults :refer [site-defaults wrap-defaults]]))
+  (:require
+   [ring.middleware.cookies :refer [wrap-cookies]]
+   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]))
 
 (defn wrap-middleware [handler]
-  (wrap-defaults handler site-defaults))
+  (-> handler
+      (wrap-defaults (dissoc site-defaults :security))
+      wrap-cookies
+      )
+ ;; (wrap-defaults handler site-defaults)
+  )

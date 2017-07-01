@@ -52,3 +52,6 @@
             (js->clj
              (.parse js/JSON data)
              :keywordize-keys true))))))))
+
+(defn fire-event [event]
+  (ajax/POST "/api/fire" {:params event :format :json}))

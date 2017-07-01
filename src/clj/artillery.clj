@@ -34,7 +34,7 @@
 
   (in-ns 'artillery)
 
-  (defonce system (atom (create-system)))
+  (reset! system (create-system))
 
   (swap! system component/start)
 

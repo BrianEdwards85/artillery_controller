@@ -1,5 +1,6 @@
 (ns artillery.views
   (:require [reagent.core  :as r]
+            [artillery.service :as service]
             [re-frame.core :refer [subscribe dispatch]]))
 
 (defn glyphicon [n]
@@ -13,8 +14,14 @@
    [:td (:delay event)]
    [:td (:offset event)]
    [:td
-    [:button {:class "btn btn-primary btn-sm" :type "button" :on-click #(add-handler (:idx event))} [glyphicon "plus"]]
-    [:button {:class "btn btn-primary btn-sm" :type "button" :on-click #(dispatch [:remove-scene-event event])} [glyphicon "trash"]]]])
+    [:button {:class "btn btn-primary btn-sm" :type "button" :on-click #(add-handler (:idx event))}
+     [glyphicon "plus"]]
+    [:button {:class "btn btn-primary btn-sm" :type "button" :on-click #(dispatch [:remove-scene-event event])}
+     [glyphicon "trash"]]
+    [:button {:class "btn btn-primary btn-sm" :type "button" :on-click #(service/fire-event event)}
+     [glyphicon "fire"]]  ]])
+
+
 
 (defn scene-event-table [events add-handler]
   [:table {:class "table"}

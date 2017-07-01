@@ -1,5 +1,5 @@
 (ns artillery.handler
-  (:require [compojure.core :refer [GET PUT DELETE routes]]
+  (:require [compojure.core :refer [GET PUT DELETE POST routes]]
             [compojure.route :refer [not-found resources]]
             [artillery.middleware :refer [wrap-middleware]]
             [artillery.orchestrator :as orchestrator]
@@ -61,10 +61,17 @@
      }
     ))
 
+(defn fire-event [request]
+  (let [event (-> request :body slurp (json/read-str :key-fn keyword))]
+    (orchestrator/fire-event (:orchestrator request) event)
+    {:stauts 200
+     :body "Fired"}))
+
 (defn app-routes []
   (routes
    (GET "/" [] (http/loading-page))
    (GET "/scene/:id" [id] (http/loading-page))
+   (POST "/api/fire" [] fire-event)
    (GET "/api/scenes" [] get-scenes)
    (PUT "/api/scenes" [] add-scene)
    (GET "/api/scenes/:scene" [scene] get-scene-events)

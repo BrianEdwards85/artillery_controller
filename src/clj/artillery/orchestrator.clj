@@ -93,6 +93,12 @@
   )
 )
 
+(defn fire-event [orchestrator event]
+  (mqtt/publish
+   (:mqtt orchestrator)
+   (str "/" (:device event) "/" (:pin event))
+   (select-keys event [:addr :pin])))
+
 (comment
 
   (manifold.stream/consume #(println %) (artillery.orchestrator/schedule-events (:orchestrator @system) "bb0daed2-6760-481e-8de5-53c6d55bf85e" ) )

@@ -10,6 +10,16 @@
                 :on-success      [succcess]
                 :on-failure      [failure]}})
 
+(defn add-scene [desc succcess failure]
+  {:http-xhrio {:method          :put
+                :uri             "/api/scenes"
+                :body            desc
+                :response-format (ajax/text-response-format)
+                :headers         {:content-type "text/plain"}
+                :format          (ajax/text-request-format)
+                :on-success      [succcess]
+                :on-failure      [failure]}})
+
 (defn get-scene-events [scene succcess failure]
   {:http-xhrio {:method          :get
                 :uri             (str "/api/scenes/" scene)

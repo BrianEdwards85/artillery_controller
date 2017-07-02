@@ -14,7 +14,8 @@
    })
 
 (defn initialize-event [_ _]
-  (init-db))
+  {:db (init-db)
+   :dispatch [:get-scenes]})
 
 (defn nav-scenes [{:keys [db]} _]
   {:db (assoc db :page :scenes)
@@ -69,10 +70,14 @@
              #(re-frame/dispatch [:scene-done]))
   (assoc db :triggered-events #{}))
 
+(defn add-scene [db [_ d]]
+  (merge
+   (service/add-scene d :get-scenes :get-scenes-failure)
+   {:db (assoc db :loading true)}))
 
 (defn reg-events []
   (do
-    (re-frame/reg-event-db :initialize initialize-event)
+    (re-frame/reg-event-fx :initialize initialize-event)
 
     (re-frame/reg-event-fx :get-scenes get-scenes)
     (re-frame/reg-event-db :get-scenes-succcess get-scenes-succcess)
@@ -91,6 +96,8 @@
     (re-frame/reg-event-db :event-triggered event-triggered)
     (re-frame/reg-event-db :scene-done scene-done)
     (re-frame/reg-event-db :run-scene run-scene)
+
+    (re-frame/reg-event-fx :add-scene add-scene)
 
     ))
 

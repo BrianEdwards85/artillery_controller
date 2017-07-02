@@ -103,6 +103,18 @@
                                                     (reset! idx nil)
                                                     (reset! add-event false))]])])))
 
+(defn add-scene-add-form [close]
+  (let [desc (r/atom "")]
+    (fn []
+      [:form
+       [bootstrap-input "descInput" "Description" desc]
+       [:button {:class "btn btn-default"
+                 :type "button"
+                 ::on-click #(do
+                               (dispatch [:add-scene @desc])
+                               (close))}
+        "Add"]])))
+
 (defn scene-item [scene]
   [:li [:a {:href (str "/scene/" (:id scene))} (:description scene)]])
 
@@ -112,10 +124,18 @@
      ^{:key (str "scene-" (:id scene))} [scene-item scene])])
 
 (defn scenes-panel []
-  (let [scenes (subscribe [:scenes])]
+  (let [scenes (subscribe [:scenes])
+        add-scene (r/atom false)]
     (fn []
-      [:div "Scenes"]
-      [scenes-list @scenes])))
+      [:div
+       [:div "Scenes"]
+       [:div
+        [:button {:class "btn btn-default" :type "button" :on-click #(reset! add-scene true)} "Add"]]
+       [scenes-list @scenes]
+       (if @add-scene
+         [modal #(reset! add-scene false)
+          [add-scene-add-form #(reset! add-scene false)]])]
+      )))
 
 (defn main-panel []
   (let [page (subscribe [:page])]

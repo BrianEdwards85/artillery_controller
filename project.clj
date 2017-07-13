@@ -47,9 +47,6 @@
             [lein-asset-minifier "0.2.7"
              :exclusions [org.clojure/clojure]]]
 
-;;  :ring {:handler artillery.handler/app
-;;         :uberwar-name "artillery.war"}
-
   :min-lein-version "2.5.0"
 
   :uberjar-name "artillery.jar"

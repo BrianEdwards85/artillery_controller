@@ -1,5 +1,5 @@
 (defproject artillery "0.1.1-SNAPSHOT"
-  :description "FIXME: write description"
+  :description "Clojure/script controler for artillery service"
   :url "https://github.com/BrianEdwards85/artillery_controller"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
